@@ -7,7 +7,7 @@ import AISearchBar from '@/components/AISearchBar';
 import AIResponseCard from '@/components/AIResponseCard';
 import FilterTags from '@/components/FilterTags';
 import PropertyOverview from '@/components/PropertyOverview';
-import { MessageCircle, History } from 'lucide-react';
+import { MessageCircle, History, Smartphone } from 'lucide-react';
 
 const Index = () => {
   const {
@@ -21,6 +21,22 @@ const Index = () => {
   const [queryResult, setQueryResult] = useState<QueryResult | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check if device is mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
+      const mobileRegex = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i;
+      const isMobileDevice = mobileRegex.test(userAgent.toLowerCase());
+      const isSmallScreen = window.innerWidth <= 768;
+      setIsMobile(isMobileDevice || isSmallScreen);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Load search history from localStorage on component mount
   useEffect(() => {
@@ -71,6 +87,46 @@ const Index = () => {
   const handleExampleClick = (query: string) => {
     handleSearch(query);
   };
+
+  // Mobile under development screen
+  if (isMobile) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
+          <div className="mb-6">
+            <div className="mx-auto w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+              <Smartphone className="w-10 h-10 text-blue-600" />
+            </div>
+            <h1 className="text-2xl font-bold text-gray-800 mb-2">
+              Mobile Version
+            </h1>
+            <h2 className="text-xl font-semibold text-blue-600 mb-4">
+              Under Development
+            </h2>
+          </div>
+          
+          <div className="space-y-4 text-gray-600">
+            <p className="text-lg">
+              We're working hard to bring you an amazing mobile experience!
+            </p>
+            <p>
+              For now, please visit us on a desktop or laptop computer to access the full Real Estate AI Assistant.
+            </p>
+          </div>
+          
+          <div className="mt-8 p-4 bg-blue-50 rounded-lg">
+            <p className="text-sm text-blue-700">
+              <strong>Coming Soon:</strong> Mobile-optimized interface with all the features you love
+            </p>
+          </div>
+          
+          <div className="mt-6 text-xs text-gray-500">
+            Thank you for your patience!
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex bg-white font-inter w-full">
